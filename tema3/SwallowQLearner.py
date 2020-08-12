@@ -12,6 +12,7 @@ from libs.perceptron import SLP
 from utils.decay_schedule import LinearDecaySchedule
 import random
 import gym
+# importamos el buffer que creamos para simular la memoria, experiencia del agente y la clase de Experience
 from utils.experience_memory import ExperienceMemory, Experience
 
 MAX_NUM_EPISODES = 100000
@@ -36,7 +37,9 @@ class SwallowQLearner(object):
         self.step_num = 0
         self.policy = self.epsilon_greedy_Q
         
+        # Inicializamos el buffer
         self.memory = ExperienceMemory(capacity = int(1e5))
+
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         
@@ -76,6 +79,8 @@ class SwallowQLearner(object):
         :return: 
         """
         batch_xp = Experience(*zip(*experiences))
+        # El * indica que hay una referencia (no le paso directamente el valor sino la referencia ya que 
+        # extraereos varios valores)
         obs_batch = np.array(batch_xp.obs)
         action_batch = np.array(batch_xp.action)
         reward_batch = np.array(batch_xp.reward)
@@ -84,12 +89,22 @@ class SwallowQLearner(object):
         
         td_target = reward_batch + ~done_batch * \
                     np.tile(self.gamma, len(next_obs_batch)) * \
-                    self.Q(next_obs_batch).detach().max(1)[0].data
+                    self.Q(next_obs_batch).detach().max(1)[0].data.numpy() # .numpy: Lo que sucede es que estamos multiplicando 3 arrays de Numpy por un tensor de Torch y al parecer eso no es posible en estas versiones por lo que debes convertir ese tensor en un array de Numpy
+        td_target = torch.from_numpy(td_target) # dado que estamos trabajando con tensores debemos convertir ese array en un Tensor
+        #np.tile: creamos un array repitiendo el valor de gamma len(next_obs_batch) veces
+        # ~done_batch = No done_batch = 0: significa En caso de que sea True = ~done_batch = 1 y
+        # denota el fin de un episodio si es false indica que hay otra experiencia, ie otra observación
+        # es la misma función que teníamos en la función learn solo que lo hemos pasado a vectorial (a vectores)
+        # por lo tanto esta denotación matricial no evita meter if por si ha o no acabado el episodio
         
         td_target = td_target.to(self.device)
         action_idx = torch.from_numpy(action_batch).to(self.device)
         td_error = torch.nn.functional.mse_loss(
-                self.Q(obs_batch).gather(1, action_idx.view(-1,1)),
+                self.Q(obs_batch).gather(1, action_idx.view(-1,1).long()), # .long: view(-1,1) -> retorna un Tensor y gather no espera un Tensor, esta esperando un LongTensor
+                # gather (1:estamos diciendo que uniremos por fila) en la posición -> action_idx 
+                # dentro de todo el conjunto de observaciones -> view(-1,1)
+                # ie juntamos todas las acciones que coinciden con las acciones determinadas de cuando
+                # estuvimos en ese punto
                 td_target.float().unsqueeze(1))
         
         self.Q_optimizer.zero_grad()
@@ -113,6 +128,7 @@ if __name__ == "__main__":
             #environment.render()
             action = agent.get_action(obs)
             next_obs, reward, done, info = environment.step(action)
+            # Para guardar un objeto experience con los 5 datos de obs, action, etc
             agent.memory.store(Experience(obs, action, reward, next_obs, done))
             agent.learn(obs, action, reward, next_obs)
             
@@ -128,8 +144,9 @@ if __name__ == "__main__":
                     max_reward = total_reward
                 print("\nEpisodio#{} finalizado con {} iteraciones. Recompensa = {}, Recompensa media = {}, Mejor recompensa = {}".
                       format(episode, step+1, total_reward, np.mean(episode_rewards), max_reward))
+                # Denotamos el mínimode iteraciones para poder empezar a hacer uso de la memoria
                 if agent.memory.get_size()>100:
-                    agent.replay_experience(32)
+                    agent.replay_experience(32) # Aquí denotamos que recuerde 32 (aleatorias) de los 100
                 break
     environment.close()
             

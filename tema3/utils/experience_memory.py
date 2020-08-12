@@ -21,7 +21,7 @@ class ExperienceMemory(object):
         :return:
         """
         self.capacity = capacity
-        self.memory_idx = 0 #identificador que sabe la experiencia actual
+        self.memory_idx = 0 #identificador que sabe la experiencia actual (ie en la que me encuentro)
         self.memory = []
         
     def sample(self, batch_size):
@@ -45,3 +45,12 @@ class ExperienceMemory(object):
         """
         self.memory.insert(self.memory_idx % self.capacity, exp)
         self.memory_idx += 1
+
+        """
+        Nota: 'self.memory_idx % self.capacity' lo que hace es indicar la posición en donde se insertará
+            exp. Lo que haces es asignarlo un indicador dentro del array entre 0 - 999 999 dado que 
+            capacity = 1e6. Posteriormente sí memory_idx es = 1e6, notar que la posición en donde se 
+            almacenará exp dentro del array 'memory' será 0 (ie reemplazará el valor que ya estaba ahí)
+            y si fuera memory_idx es = 1e6 + 1 la posición en donde se almacenará exp será 1 y así
+            sucesivamente. Entonces aquí es donde hacemos que nuestro buffer sea cíclico haciendo que 
+            guarde la info más reciente."""

@@ -1,0 +1,9 @@
+Commands for install files
+
+pip install "C:/Users/luisg.guzman/Documents/respaldo/Udemy/IA-course-master/ai_sources/atari_py-1.2.1-cp37-cp37m-win_amd64.whl"
+pip install "C:/Users/luisg.guzman/Documents/respaldo/Udemy/IA-course-master/ai_sources/boost_python-1.72-cp37-cp37m-win_amd64.whl"
+pip install "C:/Users/luisg.guzman/Documents/respaldo/Udemy/IA-course-master/ai_sources/Box2D-2.3.2-cp37-cp37m-win_amd64.whl"
+pip install "C:/Users/luisg.guzman/Documents/respaldo/Udemy/IA-course-master/ai_sources/pygame-1.9.6-cp37-cp37m-win_amd64.whl"
+
+to install pytorch
+conda install pytorch-cpu torchvision -c pytorch

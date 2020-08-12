@@ -30,7 +30,8 @@ class ParamsManager(object):
     def export_agent_params(self, file_name):
         with open(file_name, 'w') as f:  
             json.dump(self.params['agent'], f, indent=4, separators = (',', ':'), sort_keys=True)
-            f.write("\n")
+            # guardamos por clave agent, separará la clave valor por : y las nuevas filas por ',', ie la estructura del json
+            f.write("\n") # añadimos un intro para mejor visualización
                  
     def export_environment_params(self, file_name):
         with open(file_name, 'w') as f:  
