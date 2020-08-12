@@ -1,0 +1,74 @@
+Deep Learnig (Redes neuronales)
+El modelo estandariza los valores para que que considere cada dato con la misma dispersión para evitar realizar 
+un sobreajuste o en otras palabras para que la red neuronal no sesgue la información.
+
+Las salidas de este modelo pueden ser 3:
+1.- Una variable continua
+2.- Binarios (si/no)   (conviene usar una funcion de activacion escalon o sigmoide)
+3.- Una variable categorica (a traves de variables dummy)
+
+Hay varias funciones de activación pero las 4 más importantes son:
+1.- Función escalon (Crea un salto en torno al valor 0, se activa o no se activa la neurana, ie, no hay zonas intermedias [0,1])
+2.- Función sigmoide (Es mas o menos la misma función escalon pero un poco más continua/ Función logaritmica [0,1])
+	¿Que tan problable es que la neurona se active?
+3.-Rectificador lineal unitario (Transforma todos los pesos negativos en 0 y todo lo positivo se conserva como tal [0,1])
+	La idea es que todo 0 y a partir de cierto punto la función incrementa gradualmente con respecto al valor de entrada
+4.-Tangente hipervólica (tanh) (Es parecida a las demás funciones, sin embargo esta considera valores negativos [-1,1])
+	
+
+
+Redes Neuronales de Convolución
+
+
+1.-Operacion de convolucion (Es una integral)
+Es una operación que dada una función esta modifica a la otra
+completa el filtro de la imagen, resumen la información de la imagen original y extrae los rasgos dado el 
+tamaño que tiene el detector de rasgos 
+
+1b.- Capa Relu (capa rectificadora lineal unitaria)
+Se aplica una funcion rectificadora lineal unitaria a la capa de convolucion 
+
+2.- Max Pooling (Agrupación maxima)
+Se realiza para que la red neuronal sea capaz de de identificar una imagen ya sea si esta rotada, expandida, 
+si esta comprimida, si tiene mucha iluminación, modificaciones de color, distorsión, etc
+
+-Lo que hace es que realiza es un mapa de caracteristicas más pequeño basandose en el mapa de características obtenido
+-preserva los valores maximos del mapa de caracteristicas, pero solo se queda con 1 de cada 4 píxeles.
+-Esto ayuda a evitar el sobreajuste.(las caracteristicas se extraeran a rasgos generales)
+
+3.- Flattening (Entender como las capas se juntan y se apalan para crear la entrada a una red neuronal todas conectadas)
+Aplanamos todos los mapas de caracteristicas pooled en un gran vector 
+
+4.- Full conection (red neuronal todas conectadas)
+Se conectan todos los nodos de la red neuranal artificial.
+
+Función de Softmax: transformación la cual es una generalización logistica para que el total las probabilidades de
+		    los nodos de salida nos sumen 1.
+
+Entropía cruzada (H): Es aplicar un logaritmo negativo a la función de softmax. Cumple masomenos el mismo papel que la función 
+			de coste o la minimización del error cuadrático medio.
+			Responde la pregunta: ¿Que tan problabe es que la red neuronal clasifique erroneamente?
+
+Nota: la entropia cruzada solo se puede usar para redes neuronales de clasificacion pues la entropia cruzada evula que tan
+lejos estoy de la clase de intento predecir por lo que si es una red neuronal de regrsión forzosamente se tiene
+que usar error cuadrático medio.
+
+La razón de que usemos la entropía en lugar del error cuadratico medio es que con el error cudrático medio, cuando el
+error es muy pequeño al valor de la predicción real al usar el gradiente descendente no se movera mucho, ie, tardara
+en hacer los calulos mientras que la entropia al usar logaritmo los errores pequeños los maximiza por lo que los
+movientos serían mucho más grandes por lo que se llegaría antes al estado optimo.
+
+torch.nn.sequential(tor
+
+input_shape: Es la dimensión  como se recibirá la imagen (renglones, columnas, a color/blanco&negro) 
+	     Tener en cuenta que entre más pixeles a considerar más tardará la CNN en procesar los datos 
+	     De preferencia usar 64x64x3 o 64x64x1
+kernel_size(int or tuple): Dimensión del mapa de características (si solo se proporciona un número sería cuadrado, 
+			   ie, 2 -> 2x2)
+stride(int or tuple, optional) : Son los pasos que avanzará el mapa de características. Ejemplo: 
+	stride=2 de la coordenada (0,0) pasará a la coordenada (0,2) -> (0,4) etc.
+padding (int or tuple, optional): Zero-padding added to both sides of the input.
+
+Después de la primera capa conv, normalmente tenemos una capa de agrupación que reduce la imagen (por ejemplo, 
+convierte un volumen de 32x32x3 en un volumen de 16x16x3)			
+
