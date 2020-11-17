@@ -77,9 +77,12 @@ if torch.cuda.is_available() and use_cuda:
     torch.cuda.manual_seed_all(seed)
     
 ##Trayectoria = [T1, T2, T3, T4, T5, T6]
-## T_t = (st, at, rt, st+1)
+## T_t = (st, at, rt, st+1) Trayectoría del agente
 Transition = namedtuple("Transition", ["s", "value_s", "a", "log_prob_a"])
 
+# Creamos una clase DeepActorCriticAgent que herede de mp.Process poder crear una interfaz en donde
+# multiples agentes entrenen en paralelo de modo que agilizemos el proceso.
+# Esto es más para una red de ordenadores
 class DeepActorCriticAgent(mp.Process):
     def __init__(self, id, env_name, agent_params, env_params):
        """
@@ -141,7 +144,7 @@ class DeepActorCriticAgent(mp.Process):
         
     def discrete_policy(self, obs):
         """
-        Calcula una distribución discreta o categórica sobre las acciones dadas las observaciones del agente
+        Calcula una distribución discreta o categórica sobre las acciones dadas las observaciones del agente (continuas)
         :param obs: observaciones del agente
         :return: politica formada por una distribución sobre las acciones a partir de las observaciones
         """

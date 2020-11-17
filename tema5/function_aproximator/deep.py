@@ -62,6 +62,7 @@ class DeepDiscreteActor(torch.nn.Module):
         :param output_shape: Forma de los datos de salida (representan las acciones que debe producir el actor)
         :param device: Donde se almacena y opera la red neuronal (CPU vs CUDA).
         """
+        #suponieindo una entrada de 84
         super(DeepDiscreteActor, self).__init__()
         self.device = device
         self.layer1 = torch.nn.Sequential(torch.nn.Conv2d(input_shape[2], 32, 8, stride = 4, padding = 0),
